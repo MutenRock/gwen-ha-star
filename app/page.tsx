@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState, useRef } from 'react'
-import { Play, PenTool, FlaskConical, Globe, Brain, ShoppingBag, Swords, Zap } from 'lucide-react'
+import { Play, PenTool, FlaskConical, Globe, Brain, ShoppingBag, Swords, Zap, Leaf } from 'lucide-react'
 
 const DAILY_VIDEO = {
   url:    'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
@@ -9,14 +9,15 @@ const DAILY_VIDEO = {
 }
 
 const services = [
-  { id:'sterenna',   title:'STERENNA',       desc:'Boutique · Laser · 3D Print', icon:ShoppingBag,   color:'#f9ca24', href:'https://shop.sterenna.fr',        role:'all', external:true },
-  { id:'chronicles', title:'CHRONICLES TCG', desc:'Trading Card Game · Alpha',   icon:Swords,        color:'#ff6b6b', href:'https://chronicles.sterenna.fr',  role:'all', external:true },
-  { id:'pokegang',   title:'POKEFORGE',      desc:'Rocket HQ · Gang Wars',       icon:Play,          color:'#ff6b6b', href:'https://pokegang.nitro.sterenna.fr', role:'all', external:true },
-  { id:'draw',       title:'EXCALIDRAW',     desc:'Whiteboard · Collaboratif',   icon:PenTool,       color:'#4ecdc4', href:'https://draw.nitro.sterenna.fr',     role:'all', external:true },
-  { id:'chef',       title:'CYBERCHEF',      desc:'Encodage · Crypto · Utils',   icon:FlaskConical,  color:'#34d399', href:'https://chef.nitro.sterenna.fr',     role:'all', external:true },
-  { id:'lab',        title:'LAB',            desc:'Expérimentations · Sterenna', icon:FlaskConical,  color:'#00b894', href:'https://lab.sterenna.fr',             role:'all', external:true },
-  { id:'clicker',    title:'STEAM CLICKER',  desc:'Incremental Game · En cours', icon:Zap,           color:'#fdcb6e', href:'#',                                role:'all', external:false },
-  { id:'leme',       title:'LEME',           desc:'Lemegeton · Agent IA · Oracle', icon:Brain,       color:'#c084fc', href:'https://leme.nitro.sterenna.fr',     role:'all', external:true },
+  { id:'sterenna',   title:'STERENNA',         desc:'Boutique · Laser · 3D Print',   icon:ShoppingBag, color:'#f9ca24', href:'https://shop.sterenna.fr',                    role:'all', external:true  },
+  { id:'chronicles', title:'CHRONICLES TCG',   desc:'Trading Card Game · Alpha',     icon:Swords,      color:'#ff6b6b', href:'https://chronicles.sterenna.fr',              role:'all', external:true  },
+  { id:'pokegang',   title:'POKEFORGE',        desc:'Rocket HQ · Gang Wars',         icon:Play,        color:'#ff6b6b', href:'https://pokegang.nitro.sterenna.fr',          role:'all', external:true  },
+  { id:'botanica',   title:'BOTANICA OBSCURA', desc:'Idle Gacha · Mutations · Codex',icon:Leaf,        color:'#4caf50', href:'/botanica',                                  role:'all', external:false },
+  { id:'draw',       title:'EXCALIDRAW',       desc:'Whiteboard · Collaboratif',     icon:PenTool,     color:'#4ecdc4', href:'https://draw.nitro.sterenna.fr',              role:'all', external:true  },
+  { id:'chef',       title:'CYBERCHEF',        desc:'Encodage · Crypto · Utils',     icon:FlaskConical,color:'#34d399', href:'https://chef.nitro.sterenna.fr',              role:'all', external:true  },
+  { id:'lab',        title:'LAB',              desc:'Expérimentations · Sterenna',   icon:FlaskConical,color:'#00b894', href:'https://lab.sterenna.fr',                    role:'all', external:true  },
+  { id:'clicker',    title:'STEAM CLICKER',    desc:'Incremental Game · En cours',   icon:Zap,         color:'#fdcb6e', href:'#',                                          role:'all', external:false },
+  { id:'leme',       title:'LEME',             desc:'Lemegeton · Agent IA · Oracle', icon:Brain,       color:'#c084fc', href:'https://leme.nitro.sterenna.fr',              role:'all', external:true  },
 ]
 
 const LOG_MESSAGES = [
@@ -30,6 +31,7 @@ const LOG_MESSAGES = [
   'CYBERCHEF · READY',
   'SIGNAL NOMINAL · 99.8%',
   'LEME AGENT · ONLINE',
+  'BOTANICA · MUTATIONS ACTIVE',
 ]
 
 type Star = {
@@ -47,17 +49,17 @@ function seededNumber(index: number, salt: number) {
 }
 
 const STAR_FIELD: Star[] = Array.from({ length: 80 }, (_, i) => ({
-  width: seededNumber(i, 1) > 0.85 ? '2px' : '1px',
-  height: seededNumber(i, 2) > 0.85 ? '2px' : '1px',
-  top: `${seededNumber(i, 3) * 100}%`,
-  left: `${seededNumber(i, 4) * 100}%`,
-  opacity: seededNumber(i, 5) * 0.7 + 0.1,
+  width:     seededNumber(i, 1) > 0.85 ? '2px' : '1px',
+  height:    seededNumber(i, 2) > 0.85 ? '2px' : '1px',
+  top:       `${seededNumber(i, 3) * 100}%`,
+  left:      `${seededNumber(i, 4) * 100}%`,
+  opacity:   seededNumber(i, 5) * 0.7 + 0.1,
   animation: `twinkle ${2 + seededNumber(i, 6) * 4}s ${seededNumber(i, 7) * 5}s infinite`,
 }))
 
 export default function StarPage() {
-  const [time,    setTime]    = useState('')
-  const [logs,    setLogs]    = useState<{ t: string; msg: string }[]>([])
+  const [time, setTime]   = useState('')
+  const [logs, setLogs]   = useState<{ t: string; msg: string }[]>([])
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
@@ -105,26 +107,18 @@ export default function StarPage() {
     return () => cancelAnimationFrame(raf)
   }, [])
 
-  const visible = services
-
   return (
     <div style={{ fontFamily: '"Share Tech Mono", monospace', background: '#03050f', minHeight: '100vh', color: '#c8b8ff', overflowX: 'hidden' }}>
 
       {/* ÉTOILES */}
       <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0 }}>
         {STAR_FIELD.map((star, i) => (
-          <div key={i} style={{
-            position: 'absolute', borderRadius: '50%', background: '#fff',
-            ...star
-          }}/>
+          <div key={i} style={{ position: 'absolute', borderRadius: '50%', background: '#fff', ...star }}/>
         ))}
       </div>
 
       {/* SCANLINES */}
-      <div style={{
-        position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 1,
-        background: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.12) 2px, rgba(0,0,0,0.12) 4px)'
-      }}/>
+      <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 1, background: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.12) 2px, rgba(0,0,0,0.12) 4px)' }}/>
 
       {/* HEADER */}
       <header style={{
@@ -189,12 +183,13 @@ export default function StarPage() {
           <div style={{ background: 'rgba(0,0,0,0.6)', border: '1px solid rgba(0,255,136,0.2)', borderRadius: '14px', padding: '16px' }}>
             <div style={{ fontSize: '9px', letterSpacing: '3px', color: '#00ff88', marginBottom: '12px' }}>SYSTEMS</div>
             {[
-              { label:'POWER',   color:'#00ff88', d:'0s'   },
-              { label:'NETWORK', color:'#00ff88', d:'0.3s' },
-              { label:'TUNNEL',  color:'#00ff88', d:'0.6s' },
-              { label:'AI CORE', color:'#f9ca24', d:'0.9s' },
-              { label:'MEDIA',   color:'#6c5ce7', d:'1.2s' },
-              { label:'STREAM',  color:'#3ecfcf', d:'1.5s' },
+              { label:'POWER',    color:'#00ff88', d:'0s'   },
+              { label:'NETWORK',  color:'#00ff88', d:'0.3s' },
+              { label:'TUNNEL',   color:'#00ff88', d:'0.6s' },
+              { label:'AI CORE',  color:'#f9ca24', d:'0.9s' },
+              { label:'MEDIA',    color:'#6c5ce7', d:'1.2s' },
+              { label:'STREAM',   color:'#3ecfcf', d:'1.5s' },
+              { label:'BOTANICA', color:'#4caf50', d:'1.8s' },
             ].map(s => (
               <div key={s.label} style={{ display:'flex', alignItems:'center', gap:'8px', fontSize:'10px', color:'rgba(255,255,255,0.6)', marginBottom:'8px' }}>
                 <span style={{ width:8, height:8, borderRadius:'50%', background:s.color, flexShrink:0, boxShadow:`0 0 6px ${s.color}`, animation:`pulse 2s infinite ${s.d}`, display:'inline-block' }}/>
@@ -207,19 +202,14 @@ export default function StarPage() {
         {/* COL 2 — MODULES */}
         <section>
           <div style={{ fontSize:'9px', letterSpacing:'3px', color:'#00ff88', marginBottom:'14px' }}>
-            MODULES · {visible.length} SYSTEMS ONLINE
+            MODULES · {services.length} SYSTEMS ONLINE
           </div>
           <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(200px, 1fr))', gap:'12px' }}>
-            {visible.map(svc => (
+            {services.map(svc => (
               <div key={svc.id}
                 onClick={() => {
-                  if (svc.external) {
-                    window.open(svc.href, '_blank', 'noopener,noreferrer')
-                    return
-                  }
-                  if (svc.href !== '#') {
-                    window.location.href = svc.href
-                  }
+                  if (svc.external) { window.open(svc.href, '_blank', 'noopener,noreferrer'); return }
+                  if (svc.href !== '#') { window.location.href = svc.href }
                 }}
                 onMouseEnter={e => {
                   const el = e.currentTarget as HTMLElement
@@ -235,23 +225,20 @@ export default function StarPage() {
                 }}
                 style={{
                   background:'rgba(0,0,0,0.55)', border:'1px solid rgba(255,255,255,0.08)',
-                  borderRadius:'12px', padding:'18px', cursor:'pointer',
+                  borderRadius:'12px', padding:'18px', cursor: svc.href === '#' ? 'not-allowed' : 'pointer',
                   transition:'all 0.2s ease', position:'relative', backdropFilter:'blur(6px)'
                 }}
               >
-                <span style={{ position:'absolute', top:'4px',  left:'4px',  fontSize:'10px', color:svc.color, opacity:0.4 }}>⌐</span>
-                <span style={{ position:'absolute', top:'4px',  right:'4px', fontSize:'10px', color:svc.color, opacity:0.4, transform:'scaleX(-1)' }}>⌐</span>
-                <span style={{ position:'absolute', bottom:'4px', left:'4px',  fontSize:'10px', color:svc.color, opacity:0.4, transform:'scaleY(-1)' }}>⌐</span>
-                <span style={{ position:'absolute', bottom:'4px', right:'4px', fontSize:'10px', color:svc.color, opacity:0.4, transform:'rotate(180deg)' }}>⌐</span>
+                <span style={{ position:'absolute', top:'4px',    left:'4px',   fontSize:'10px', color:svc.color, opacity:0.4 }}>⌐</span>
+                <span style={{ position:'absolute', top:'4px',    right:'4px',  fontSize:'10px', color:svc.color, opacity:0.4, transform:'scaleX(-1)' }}>⌐</span>
+                <span style={{ position:'absolute', bottom:'4px', left:'4px',   fontSize:'10px', color:svc.color, opacity:0.4, transform:'scaleY(-1)' }}>⌐</span>
+                <span style={{ position:'absolute', bottom:'4px', right:'4px',  fontSize:'10px', color:svc.color, opacity:0.4, transform:'rotate(180deg)' }}>⌐</span>
                 <span style={{ position:'absolute', top:'10px', right:'10px', width:7, height:7, borderRadius:'50%', background:svc.color, boxShadow:`0 0 8px ${svc.color}`, animation:'pulse 2.5s infinite', display:'inline-block' }}/>
                 <div style={{ width:40, height:40, borderRadius:'10px', background:`${svc.color}22`, display:'flex', alignItems:'center', justifyContent:'center', marginBottom:'12px' }}>
                   <svc.icon size={18} color={svc.color}/>
                 </div>
                 <div style={{ fontSize:'12px', fontWeight:'bold', color:'#e8e0ff', letterSpacing:'2px', marginBottom:'4px' }}>{svc.title}</div>
                 <div style={{ fontSize:'9px', color:'rgba(200,184,255,0.45)', letterSpacing:'1px' }}>{svc.desc}</div>
-                {svc.role === 'superuser' && (
-                  <span style={{ position:'absolute', bottom:'10px', right:'10px', fontSize:'8px', color:'#f87171', border:'1px solid rgba(248,113,113,0.4)', borderRadius:'3px', padding:'1px 5px', letterSpacing:'1px' }}>⚠ ADMIN</span>
-                )}
               </div>
             ))}
           </div>
@@ -312,7 +299,7 @@ export default function StarPage() {
         </div>
         <div style={{ overflow:'hidden', flex:1 }}>
           <div style={{ fontSize:'10px', color:'rgba(0,255,136,0.5)', letterSpacing:'2px', whiteSpace:'nowrap', animation:'ticker 40s linear infinite' }}>
-            STERENNA · ONLINE · CHRONICLES TCG · ALPHA · POKEFORGE · GANG WARS · LAB · EXPERIMENTS RUNNING · STEAM CLICKER · IN PROGRESS · DRAW · READY · CYBERCHEF · ONLINE · LEME · AGENT READY &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            STERENNA · ONLINE · CHRONICLES TCG · ALPHA · POKEFORGE · GANG WARS · LAB · EXPERIMENTS RUNNING · STEAM CLICKER · IN PROGRESS · BOTANICA · MUTATIONS ACTIVE · DRAW · READY · CYBERCHEF · ONLINE · LEME · AGENT READY &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
           </div>
         </div>
       </footer>
